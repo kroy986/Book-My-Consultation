@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: PAYMENT-SERVER
+
+server:
+  port: 9008
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_HOST_NAME:localhost}:${EUREKA_PORT:8761}/eureka/

@@ -1,0 +1,34 @@
+server:
+  port: 9756
+
+spring:
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      routes:
+        - id: DOCTOR-SERVER
+          uri: lb://DOCTOR-SERVER
+          predicates:
+            - Path=/api/doctors/**
+        - id: APPOINTMENT-SERVER
+          uri: lb://APPOINTMENT-SERVER
+          predicates:
+            - Path=/api/doctor/**,/api/appointment/**,/api/user/**,/api/appointments/**,/api/prescriptions/**
+        - id: USER-SERVER
+          uri: lb://USER-SERVER
+          predicates:
+            - Path=/api/users/**
+        - id: PAYMENT-SERVER
+          uri: lb://PAYMENT-SERVER
+          predicates:
+            - Path=/api/payments/**
+        - id: RATING-SERVER
+          uri: lb://RATING-SERVER
+          predicates:
+            - Path=/api/ratings/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_HOST_NAME:localhost}:${EUREKA_PORT:8761}/eureka/

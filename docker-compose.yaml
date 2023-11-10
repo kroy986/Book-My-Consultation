@@ -1,0 +1,165 @@
+version: '3.3'
+# Define services
+services:
+# App backend service
+  doctor-service:
+# Configuration for building the docker image for the backend service
+    build: doctorServer
+    container_name: doctor-service
+    image: doctorbookingconsultancyapp/doctor-service:1.0.0
+    ports:
+    - "9005:9005" # Forward the exposed port 9005 to port 9005 on the host machine
+    networks:
+      - microservicesnet
+    environment:
+      EUREKA_PORT: 8761
+      MONGO_URI: mongodb
+      EUREKA_HOST_NAME: 34.232.68.108
+      KAFKA_URI: 34.232.4.96
+    depends_on:
+      - mongodb # This service depends on mysql. Start that first.
+      - apigateway
+      - serviceregistry # This service depends on mysql. Start that first.    
+  user-service:
+    build: userservice
+    container_name: user-service
+    image: doctorbookingconsultancyapp/user-service:1.0.0
+    ports:
+    - "9006:9006" # Map the exposed port 9006 on container to port 9006 on the host machine
+    networks:
+      - microservicesnet
+    environment:
+      EUREKA_PORT: 8761
+      MONGO_URI: mongodb
+      EUREKA_HOST_NAME: 34.232.68.108
+      KAFKA_URI: 34.232.4.96
+    depends_on:
+      - mongodb # This service depends on mysql. Start that first.
+      - apigateway
+      - serviceregistry # This service depends on mysql. Start that first.    
+  appointmentsvc:
+    build: appointmentservice
+    container_name: appointment-service
+    image: doctorbookingconsultancyapp/appointment-service:1.0.0
+    ports:
+    - "9007:9007" # Map the exposed port 9007 on container to port 9007 on the host machine
+    networks:
+      - microservicesnet
+    environment:
+      EUREKA_PORT: 8761
+      MONGO_URI: mongodb
+      EUREKA_HOST_NAME: 34.232.68.108
+      KAFKA_URI: 34.232.4.96
+    depends_on:
+      - mongodb # This service depends on mysql. Start that first.
+      - apigateway
+      - serviceregistry # This service depends on mysql. Start that first.   
+  paymentsvc:
+    build: paymentservice
+    container_name: payment-service
+    image: doctorbookingconsultancyapp/payment-service:1.0.0
+    ports:
+    - "9008:9008" # Map the exposed port 9008 on container to port 9008 on the host machine
+    networks:
+      - microservicesnet
+    environment:
+      EUREKA_PORT: 8761
+      MONGO_URI: mongodb
+      EUREKA_HOST_NAME: 34.232.68.108
+      KAFKA_URI: 34.232.4.96
+    depends_on:
+      - mongodb # This service depends on mysql. Start that first.
+      - apigateway
+      - serviceregistry # This service depends on mysql. Start that first.      
+  ratingsvc:
+    build: ratingservice
+    container_name: rating-service
+    image: doctorbookingconsultancyapp/rating-service:1.0.0
+    ports:
+    - "9020:9020" # Map the exposed port 9020 on container to port 9020 on the host machine
+    networks:
+      - microservicesnet
+    environment:
+      EUREKA_PORT: 8761
+      MONGO_URI: mongodb
+      EUREKA_HOST_NAME: 34.232.68.108
+      KAFKA_URI: 34.232.4.96
+    depends_on:
+      - mongodb # This service depends on mysql. Start that first.
+      - apigateway
+      - serviceregistry # This service depends on mysql. Start that first.      
+  notificationsvc:
+    build: notificationservice
+    container_name: notification-service
+    image: doctorbookingconsultancyapp/notification-service:1.0.0
+    ports:
+    - "9030:9030" # Map the exposed port 9030 on container to port 9030 on the host machine
+    networks:
+      - microservicesnet
+    environment:
+      EUREKA_PORT: 8761
+      MONGO_URI: mongodb
+      EUREKA_HOST_NAME: 34.232.68.108
+      KAFKA_URI: 34.232.4.96
+    depends_on:
+      - mongodb # This service depends on mysql. Start that first.
+      - apigateway
+      - serviceregistry # This service depends on mysql. Start that first.      
+  authenticationsvc:
+    build: authenticationServer
+    container_name: authentication-service
+    image: doctorbookingconsultancyapp/authentication-service:1.0.0
+    ports:
+    - "8989:8989" # Map the exposed port 8989 on container to port 8989 on the host machine
+    networks:
+      - microservicesnet
+    environment:
+      EUREKA_PORT: 8761
+      MONGO_URI: mongodb
+      EUREKA_HOST_NAME: 34.232.68.108
+      KAFKA_URI: 34.232.4.96
+    depends_on:
+      - mongodb # This service depends on mysql. Start that first.
+      - apigateway
+      - serviceregistry # This service depends on mysql. Start that first.          
+  apigateway:
+    build: apigateway
+    container_name: api-gateway-service
+    image: doctorbookingconsultancyapp/api-gateway-service:1.0.0
+    ports:
+    - "9756:9756" # Map the exposed port 9756 on container to port 9756 on the host machine
+    networks:
+      - microservicesnet
+    environment:
+      EUREKA_HOST_NAME: 34.232.68.108
+      EUREKA_PORT: 8761
+    depends_on:
+      - serviceregistry # This service depends on mysql. Start that first.
+  serviceregistry:
+    build: serviceregistry 
+    container_name: service-registry
+    image: doctorbookingconsultancyapp/service-registry:1.0.0
+    ports:
+    - "8761:8761" # Map the exposed port 8761 on container to port 8761 on the host machine
+    networks:
+      - microservicesnet
+    environment:
+      EUREKA_HOST_NAME: 34.232.68.108
+      EUREKA_PORT: 8761
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    networks:
+      - microservicesnet
+    environment:
+      MONGO_INITDB_DATABASE: doctorBookingConsultant
+      MONGO_INITDB_DATA_DIR: /data/db
+    volumes:
+      - mongo-data:/data/db
+networks:
+  microservicesnet:
+    driver: bridge
+volumes:
+  mongo-data:

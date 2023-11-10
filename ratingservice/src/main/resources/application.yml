@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: RATING-SERVER
+
+server:
+  port: 9020
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_HOST_NAME:localhost}:${EUREKA_PORT:8761}/eureka/
